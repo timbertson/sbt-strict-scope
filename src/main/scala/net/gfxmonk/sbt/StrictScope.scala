@@ -7,7 +7,7 @@ object StrictScopePlugin extends AutoPlugin {
     val strictScope = StrictScope.strictScope
   }
 
-  override def trigger: PluginTrigger = NoTrigger
+  override def trigger: PluginTrigger = allRequirements
 
   override val projectSettings = StrictScope.defaultSettings
 }
