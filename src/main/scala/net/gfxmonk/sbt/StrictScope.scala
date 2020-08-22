@@ -4,7 +4,8 @@ import sbt.Keys._
 
 object StrictScopePlugin extends AutoPlugin {
   object autoImport {
-    val strictScope = StrictScope.strictScope
+    val strictSettings = StrictScope.strictSettings
+    val strictScalacOptions = StrictScope.strictScalacOptions
   }
 
   override def trigger: PluginTrigger = allRequirements
@@ -13,25 +14,35 @@ object StrictScopePlugin extends AutoPlugin {
 }
 
 object StrictScope {
-  val strictScope = taskKey[Seq[Setting[_]]]("Settings to apply for the `strict` command")
+  private val fatalWarnings = "-Xfatal-warnings"
+
+  val strictSettings = taskKey[Seq[Setting[_]]]("SBT settings to apply for the `strict` command")
+
+  val strictScalacOptions = taskKey[Seq[String]]("Scalac options to apply for the `strict` command, removed outside the strict scope")
 
   val defaultSettings = Seq(
-    strictScope := defaultMakeStrict,
+    strictSettings := defaultStrictSettings,
+    strictScalacOptions := defaultStrictScalacOptions,
     commands += command,
+
+    // Remove all strictScalacOptions from non-strict mode
+    scalacOptions --= (strictScalacOptions.value),
   )
 
   // default values for the tasks and settings
-  def defaultMakeStrict: Seq[Setting[_]] = {
-     Seq(scalacOptions += "-Xfatal-warnings")
-  }
+  def defaultStrictSettings: Seq[Setting[_]] = Seq.empty
 
-  def command = Command.single("strict") { (state0, scoped) =>
-    val (state1, extraSettings) = Project.extract(state0).runTask(strictScope, state0)
-    val state2 = Project.extract(state1).appendWithoutSession(extraSettings, state1)
-    val state3 = Command.process(scoped, state2)
+  def defaultStrictScalacOptions: Seq[String] = Seq(fatalWarnings)
+
+  private def command = Command.single("strict") { (state0, scoped) =>
+    val (_, extraSettings) = Project.extract(state0).runTask(strictSettings, state0)
+    val (_, extraScalacOptions) = Project.extract(state0).runTask(strictScalacOptions, state0)
+    val allStrictSettings: Seq[Setting[_]] = (scalacOptions ++= extraScalacOptions) :: extraSettings.toList
+    val state3 = Project.extract(state0).appendWithoutSession(allStrictSettings, state0)
+    val state4 = Command.process(scoped, state3)
     // Returning state3 makes the setting permanent, which we were trying to avoid.
     // Copying the `next` property appears to propagate failure correctly, but leave the
     // rest of the state alone.
-    state0.copy(next=state3.next)
+    state0.copy(next=state4.next)
   }
 }

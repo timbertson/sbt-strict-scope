@@ -19,10 +19,13 @@ addSbtPlugin("net.gfxmonk" % "sbt-strict-scope" % "LATEST_VERSION")
 
 The idea is that you can leave off `-Xfatal-warnings` in your main build, and in CI (or before you commit) you run `sbt 'strict test'` (note the quotes: you're passing the `"test"` argument into the `strict` command, you're not running `strict` followed by `test`). That'll run the `test` command, but with your strict settings enabled.
 
-### `sbt-tpolecat` users:
+### Customization:
 
-If you're using this plugin (I am), you need to fight it a little. It enables `-Xfatal-warnings` by default already, so in your project you'll need to add:
+There are two settings to control what happens in `strict` scope:
 
-```scala
-scalacOptions ~= (_ filterNot (_ == "-Xfatal-warnings"))
-```
+ - `strictSettings: taskKey[Seq[Setting[_]]]` - SBT settings to apply for the `strict` command
+ - `strictScalacOptions: taskKey[Seq[String]]` - Scalac options to apply for the `strict` command, removed outside the strict scope
+
+By default `strictSettings` is empty, and `strictScalacOptions` contains only `-Xfatal-warnings`.
+
+**Note**: This plugin _removes_ `strictScalacOptions` from `scalacOptions` outside of strict mode. This is convenient when using e.g. `sbt-tpolecat`, which enables `-Xfatal-warnings`. You'll still get all of its other flags, but `-Xfatal-warnings` will only apply in `strict` mode.
