@@ -17,6 +17,8 @@ This plugin is simple. It adds a `strict` command which runs a subcommand with `
 addSbtPlugin("net.gfxmonk" % "sbt-strict-scope" % "LATEST_VERSION")
 ```
 
+(see [releases](https://github.com/timbertson/sbt-strict-scope/releases) for available versions)
+
 The idea is that you can leave off `-Xfatal-warnings` in your main build, and in CI (or before you commit) you run `sbt 'strict test'` (note the quotes: you're passing the `"test"` argument into the `strict` command, you're not running `strict` followed by `test`). That'll run the `test` command, but with your strict settings enabled.
 
 ### Customization:
@@ -28,4 +30,4 @@ There are two settings to control what happens in `strict` scope:
 
 By default `strictSettings` is empty, and `strictScalacOptions` contains only `-Xfatal-warnings`.
 
-**Note**: This plugin _removes_ `strictScalacOptions` from `scalacOptions` outside of strict mode. This is convenient when using e.g. `sbt-tpolecat`, which enables `-Xfatal-warnings`. You'll still get all of its other flags, but `-Xfatal-warnings` will only apply in `strict` mode.
+**Note**: As of version 2.0.0, this plugin _removes_ `strictScalacOptions` from `scalacOptions` outside of strict mode. This is convenient when using e.g. `sbt-tpolecat`, which enables `-Xfatal-warnings`. You'll still get all of its other flags, but `-Xfatal-warnings` will only apply in `strict` mode.
