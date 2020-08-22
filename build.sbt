@@ -3,7 +3,7 @@ scalaVersion in ThisBuild := "2.12.10"
 lazy val root = (project in file(".")).settings(
   organization := "net.gfxmonk",
   name := "sbt-strict-scope",
-  version := "1.1.0",
+  version := IO.read(new File("VERSION")).trim,
 
   description := "Run commands with strict settings",
   licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
