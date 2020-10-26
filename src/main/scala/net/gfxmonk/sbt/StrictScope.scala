@@ -34,15 +34,14 @@ object StrictScope {
 
   def defaultStrictScalacOptions: Seq[String] = Seq(fatalWarnings)
 
-  private def command = Command.single("strict") { (state0, scoped) =>
-    val (_, extraSettings) = Project.extract(state0).runTask(strictSettings, state0)
-    val (_, extraScalacOptions) = Project.extract(state0).runTask(strictScalacOptions, state0)
+  private def command = Command.single("strict") { (stateOriginal, scoped) =>
+    val (_, extraSettings) = Project.extract(stateOriginal).runTask(strictSettings, stateOriginal)
+    val (_, extraScalacOptions) = Project.extract(stateOriginal).runTask(strictScalacOptions, stateOriginal)
     val allStrictSettings: Seq[Setting[_]] = (scalacOptions ++= extraScalacOptions) :: extraSettings.toList
-    val state3 = Project.extract(state0).appendWithoutSession(allStrictSettings, state0)
-    val state4 = Command.process(scoped, state3)
-    // Returning state3 makes the setting permanent, which we were trying to avoid.
-    // Copying the `next` property appears to propagate failure correctly, but leave the
-    // rest of the state alone.
-    state0.copy(next=state4.next)
+
+    val stateWithSettings = Project.extract(stateOriginal).appendWithoutSession(allStrictSettings, stateOriginal)
+    val stateAfterCommand = Command.process(scoped, stateWithSettings)
+    // Return the final state, but with the original attributes (i.e. no altered settings)
+    stateAfterCommand.copy(attributes = stateOriginal.attributes)
   }
 }
