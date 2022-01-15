@@ -2,7 +2,7 @@
 // You should NOT edit it manually, your changes will be lost.
 
 ThisBuild / scalaVersion := "2.12.10"
-ThisBuild / organisation := "net.gfxmonk"
+ThisBuild / organization := "net.gfxmonk"
 ThisBuild / homepage := Some(url(s"https://github.com/timbertson/sbt-strict-scope"))
 ThisBuild / scmInfo := Some(
   ScmInfo(
