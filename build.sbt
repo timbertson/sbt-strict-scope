@@ -1,4 +1,8 @@
+import ScalaProject._
+
+
 lazy val root = (project in file(".")).settings(
+  publicProjectSettings,
   name := "sbt-strict-scope",
   description := "Run commands with strict settings",
   sbtPlugin := true,
@@ -56,6 +60,7 @@ ThisBuild / dummySetting := "Dummy value in default mode"
 
 lazy val assertNotReached = taskKey[Unit]("utility task for testEarlyExit")
 lazy val testProject = (project in file("testProject")).settings(
+  hiddenProjectSettings,
   strictSettings ++= Seq(
     dummySetting := "Dummy value in STRICT mode",
   ),
@@ -68,5 +73,10 @@ lazy val testProject = (project in file("testProject")).settings(
   },
 )
 
-lazy val aggregateProject = (project in file("testProject/aggregate")).aggregate(testProject)
-lazy val dependencyProject = (project in file("testProject/dependency")).dependsOn(testProject)
+lazy val aggregateProject = (project in file("testProject/aggregate"))
+  .settings(hiddenProjectSettings)
+  .aggregate(testProject)
+
+lazy val dependencyProject = (project in file("testProject/dependency"))
+  .settings(hiddenProjectSettings)
+  .dependsOn(testProject)

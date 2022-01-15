@@ -13,6 +13,7 @@ ThisBuild / scmInfo := Some(
 import scala.util.Try
 
 ThisBuild / version := Try(IO.read(new File("VERSION")).trim()).getOrElse("0.0.0-SNAPSHOT")
+ThisBuild / versionScheme := Some("early-semver")
 
 sonatypeProfileName := "net.gfxmonk"
 
