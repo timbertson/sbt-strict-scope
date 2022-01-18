@@ -11,5 +11,9 @@ in  { files =
                 ''
                 Compile / unmanagedSourceDirectories += baseDirectory.value.getParentFile / "src" / "main" / "scala"
                 ''
+          , docker = Scala.Docker::{
+            , updateRequires =
+                Scala.Files.default.docker.updateRequires # [ "src" ]
+            }
           }
     }

@@ -7,4 +7,5 @@ COPY project project
 RUN [ "sbt", "about" ]
 COPY build.sbt build.sbt
 COPY release.sbt release.sbt
+COPY src src
 RUN [ "sbt", "update" ]
