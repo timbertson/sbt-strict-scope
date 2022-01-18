@@ -1,3 +1,3 @@
   env:DHALL_CI_SCALA
-? https://raw.githubusercontent.com/timbertson/dhall-ci-timbertson/fc9b298341f6714dd88f1d998237a2b4370d983b/Scala/package.dhall
-    sha256:a342aa9f518f659df031be685e2342394fa68c20b80e40315aaee1b890fb10fb
+? https://raw.githubusercontent.com/timbertson/dhall-ci-timbertson/365cc27f5be3c8bc47b91324e7d174ac0b9ce435/Scala/package.dhall
+    sha256:ccdb55250535168591b0f81b3a506b7ed4e818b95e49f3c337edbc9f102ef323
