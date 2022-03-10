@@ -27,6 +27,8 @@ addCommandAlias("testPass2", "; project aggregateProject; dumpDummy; strict dump
 // includes -Xfatal-warnings in the second listing
 addCommandAlias("testPass3", "; project aggregateProject; dumpScalac; strict dumpScalac")
 
+addCommandAlias("testPass4", "; project wartProject; dumpScalac; clean; compile")
+
 // fails direct compilation
 addCommandAlias("testFail1", "; project testProject; clean; strict compile; assertNotReached")
 
@@ -35,6 +37,8 @@ addCommandAlias("testFail2", "; project aggregateProject; testProject / clean; s
 
 // fails due to aggregates(...)
 addCommandAlias("testFail3", "; project dependencyProject; testProject / clean; strict compile")
+
+addCommandAlias("testFail4", "; project wartProject; strict dumpScalac; clean; strict compile")
 
 lazy val dummySetting = taskKey[String]("dummy setting")
 
@@ -68,8 +72,22 @@ lazy val testProject = (project in file("testProject")).settings(
   dumpDummy := {
     println("DUMMY (testProject): " + dummySetting.value)
   },
+  dumpScalac := {
+    println("SCALAC: " + (Compile / scalacOptions).value)
+  },
   assertNotReached := {
     throw new MessageOnlyException("*** ERROR ***: this task should not have been reached, since the previous task should have caused early exit")
+  },
+)
+
+lazy val wartProject = (project in file("testProject/wartProject")).settings(
+  hiddenProjectSettings,
+  strictSettings ++= Seq(
+    wartremoverErrors := Warts.all,
+  ),
+  wartremoverWarnings ++= Warts.all,
+  dumpScalac := {
+    println("SCALAC: " + (Compile / scalacOptions).value)
   },
 )
 

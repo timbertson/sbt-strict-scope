@@ -62,27 +62,29 @@ object StrictScope {
     }
 
     val allStrictSettings: Seq[Setting[_]] = allScopes.flatMap { scopes =>
-      // extract extraSettings / extraScalacOptions values from this project
-      // (we assume they don't differ per-config)
-      val (_, extraScalacOptions) = extracted.runTask(strictScalacOptions.in(scopes.projectScope), stateOriginal)
-      val (_, extraSettings) = extracted.runTask(strictSettings.in(scopes.projectScope), stateOriginal)
-
-      // Generate the vanilla settings type
-      val newSettings = (scalacOptions ++= extraScalacOptions) :: extraSettings.toList
-
-      // And then apply these settings in _every_ configuration scope in this project,
+      // We need to operate on every configuration scope in this project,
       // as well as the Zero-configuration project scope.
       //
       // Config scopes are required so that we override e.g. Config / scalacOptions.
-      // But project-scopes appear to be necessary required for normal tasks
-      // (i.e. a plain `taskKey` which doesn't care about the configuration axis).
+      // But project-scopes are necessary for normal tasks
       //
       // Most of these scopes will never be referenced, but it's harmless :shrug:
       //
       // (I desperately hope I never have to learn more about the remaining two
       // axes that are untouched here)
       (scopes.projectScope :: scopes.configurationScopes).flatMap { configScope =>
-        newSettings.map(_.mapKey(setScope(configScope)))
+        // extract extraSettings / extraScalacOptions values from this project
+        val (_, extraScalacOptions) = extracted.runTask(strictScalacOptions.in(configScope), stateOriginal)
+        val (_, extraSettings) = extracted.runTask(strictSettings.in(configScope), stateOriginal)
+
+        // scope `strictSettings` to this config
+        val scopedExtras = extraSettings.toList.map(_.mapKey(setScope(configScope)))
+
+        // Extend this config's scalacOptions. This key differs across configuration,
+        // so just inheriting from `scalacOptions` would lose options specific to Compile / Test / etc.
+        val scalacSetting = scalacOptions.in(configScope) ++= extraScalacOptions
+
+        scalacSetting :: scopedExtras
       }
     }
 
