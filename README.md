@@ -1,3 +1,5 @@
+<img src="http://gfxmonk.net/dist/status/project/sbt-strict-scope.png">
+
 # Strict Scope (for SBT):
 
 Adds a `strict` command to run whatever you like with stricter settings.
