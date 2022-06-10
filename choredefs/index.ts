@@ -1,4 +1,4 @@
-import { defaultDockerOptions, default as Scala } from 'https://raw.githubusercontent.com/timbertson/chored-timbertson/16375231a831365632af72e7521e8aa8f5938be0/lib/scala.ts#main'
+import { defaultDockerOptions, default as Scala } from 'https://raw.githubusercontent.com/timbertson/chored-timbertson/16a85082768210d272aa784e236b59c9a4aa0d6b/lib/scala.ts#main'
 
 export default Scala({ repo: 'sbt-strict-scope',
 		scalaVersion: "2.12.15",
